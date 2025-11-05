@@ -2,7 +2,7 @@ use std::{path::PathBuf, sync::Mutex};
 
 use tauri::Manager;
 
-use crate::{song::Song, state::AppState};
+use crate::{song::Song, state::{AppState, volume::{get_volume, set_volume}}};
 
 mod album;
 mod song;
@@ -22,12 +22,13 @@ pub fn run() {
                     audio_path: PathBuf::from("/"),
                     cover_path: None,
                 })),
+                volume_percent: 50,
             }));
             Ok(())
         })
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_current_song])
+        .invoke_handler(tauri::generate_handler![get_current_song, get_volume, set_volume])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
