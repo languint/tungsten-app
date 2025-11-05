@@ -17,10 +17,11 @@ export function usePlaying() {
         };
     }, []);
 
-    const updatePlaying = async (proj: boolean) => {
-        setPlaying(proj);
-        await invoke("set_playing", { project: proj });
+    const updatePlaying = async (playing: boolean) => {
+        setPlaying(playing);
+        await invoke("set_playing", { playing });
     };
 
     return { playing, setPlaying: updatePlaying };
 }
+
