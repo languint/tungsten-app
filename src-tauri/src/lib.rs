@@ -1,6 +1,20 @@
+use std::sync::Mutex;
+
+use tauri::Manager;
+
+use crate::state::AppState;
+
+mod album;
+mod song;
+mod state;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            app.manage(Mutex::new(AppState::default()));
+            Ok(())
+        })
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![])

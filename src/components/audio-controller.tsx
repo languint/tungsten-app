@@ -7,7 +7,7 @@ export function AudioController() {
     return <div className="flex flex-row gap-4 justify-center items-center">
         <ArrowLeftToLineIcon />
         <Button className="h-full aspect-square rounded-full" onClick={() => setPlaying(!playing)}>
-            {playing ? <PauseIcon className="fill-background"/> : <PlayIcon className="fill-background" />}
+            {playing ? <PauseIcon className="fill-background" /> : <PlayIcon className="fill-background" />}
         </Button>
         <ArrowRightToLineIcon />
     </div>
