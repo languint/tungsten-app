@@ -12,6 +12,7 @@ export interface PlaylistSong {
 
 export interface Playlist {
     name: string,
+    cover?: string,
     songs: PlaylistSong[]
 }
 

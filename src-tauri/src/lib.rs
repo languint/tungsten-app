@@ -5,7 +5,7 @@ use tauri::Manager;
 use crate::{
     data::DataManager,
     state::{
-        AppState, playlists::{get_playlists, set_playlists}, volume::{get_volume, set_volume}
+        AppState, data_manager::get_data_manager, playlists::{get_playlists, set_playlists}, volume::{get_volume, set_volume}
     },
 };
 
@@ -39,6 +39,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             get_current_song,
+            get_data_manager,
             get_volume,
             set_volume,
             get_playlists,

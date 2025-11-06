@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize   )]
 pub struct DataManager {
     pub music_dir: PathBuf,
     pub data_dir: PathBuf,
@@ -54,13 +54,15 @@ pub struct FileSong {
     pub duration: u32,
     /// The file location of the song, relative to the `music_dir`
     pub track: PathBuf,
-    /// The file location of the cover, relative to the `data_dir`
+    /// The file location of the cover, relative to the `data_dir/covers/`
     pub cover: PathBuf,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct FilePlaylist {
     pub name: String,
+    /// The file location of the cover, relative to the `data_dir/covers/`
+    pub cover: Option<PathBuf>,
     pub songs: Vec<FileSong>,
 }
 
