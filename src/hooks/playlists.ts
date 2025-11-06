@@ -41,3 +41,26 @@ export function usePlaylists() {
     return { playlists, setPlaylists: updatePlaylists };
 }
 
+export function useCurrentPlaylist() {
+    const [currentPlaylist, setCurrentPlaylist] = useState<number | null>();
+
+    useEffect(() => {
+        invoke<number | null>("get_current_playlist").then(setCurrentPlaylist);
+
+        const unlisten = listen<number | null>("current_playlist_changed", (event) => {
+            setCurrentPlaylist(event.payload);
+        });
+
+        return () => {
+            unlisten.then((f) => f());
+        };
+    }, []);
+
+    const updateCurrentPlaylist = async (playlists: number | null) => {
+        setCurrentPlaylist(playlists);
+        await invoke("set_current_playlist", { volume: playlists });
+    };
+
+    return { currentPlaylist, setCurrentPlaylist: updateCurrentPlaylist };
+}
+

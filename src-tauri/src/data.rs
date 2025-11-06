@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Default, Serialize   )]
+#[derive(Debug, Clone, Default, Serialize)]
 pub struct DataManager {
     pub music_dir: PathBuf,
     pub data_dir: PathBuf,

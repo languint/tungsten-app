@@ -1,8 +1,7 @@
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarSeparator } from "./ui/sidebar";
-import { TooltipProvider } from "./ui/tooltip";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader } from "./ui/sidebar";
 import { DataManager, useDataManager } from "@/hooks/data-manager";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { Playlist, Playlists, usePlaylists } from "@/hooks/playlists";
+import { Playlist, Playlists, useCurrentPlaylist, usePlaylists } from "@/hooks/playlists";
 import * as path from '@tauri-apps/api/path';
 import { useEffect, useState } from "react";
 import { ListMusicIcon } from "lucide-react";
@@ -34,10 +33,12 @@ export function AppSidebar() {
 }
 
 function AppSidebarPlaylists(playlists: Playlists, dataManager: DataManager | undefined, localDataDir: string | null) {
+    const { currentPlaylist, setCurrentPlaylist } = useCurrentPlaylist();
+
     return <SidebarGroup>
         <SidebarGroupContent>
-            {playlists.map((playlist) => (
-                <button className="w-full flex flex-row gap-2 px-2">
+            {playlists.map((playlist, index) => (
+                <button className="w-full flex flex-row gap-2 px-2" onClick={(() => setCurrentPlaylist(index))}>
                     {AppSidebarPlaylistCover(playlist, dataManager, localDataDir)}
                     <div className="grow flex flex-col items-start">
                         <p>{playlist.name}</p>
@@ -52,7 +53,7 @@ function AppSidebarPlaylists(playlists: Playlists, dataManager: DataManager | un
 function AppSidebarPlaylistCover(playlist: Playlist, dataManager: DataManager | undefined, localDataDir: string | null) {
     return <div className="grow max-w-15 aspect-square border rounded-md bg-muted flex items-center justify-center">
         {playlist.cover ? <img
-            className="rounded-md grow max-w-15 aspect-square border"
+            className={`rounded-md grow max-w-15 aspect-square border`}
             src={convertFileSrc(
                 `${dataManager?.dataDir ?? `${localDataDir}/tungsten_data`}/covers/${playlist.cover}`
             )} />

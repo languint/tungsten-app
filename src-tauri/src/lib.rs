@@ -5,7 +5,7 @@ use tauri::Manager;
 use crate::{
     data::DataManager,
     state::{
-        AppState, data_manager::get_data_manager, playlists::{get_playlists, set_playlists}, volume::{get_volume, set_volume}
+        AppState, data_manager::get_data_manager, playing::{get_playing, set_playing}, playlists::{get_current_playlist, get_playlists, set_current_playlist, set_playlists}, volume::{get_volume, set_volume}
     },
 };
 
@@ -31,6 +31,8 @@ pub fn run() {
                 volume_percent: 50,
                 playlists: Box::new(playlists),
                 data_manager,
+                current_playlist: None,
+                playing: false,
             }));
 
             Ok(())
@@ -42,8 +44,12 @@ pub fn run() {
             get_data_manager,
             get_volume,
             set_volume,
+            get_playing,
+            set_playing,
             get_playlists,
             set_playlists,
+            get_current_playlist,
+            set_current_playlist,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
