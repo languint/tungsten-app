@@ -34,12 +34,11 @@ export function AppSidebar() {
 
 function AppSidebarPlaylists(playlists: Playlists, dataManager: DataManager | undefined, localDataDir: string | null) {
     const { currentPlaylist, setCurrentPlaylist } = useCurrentPlaylist();
-
     return <SidebarGroup>
         <SidebarGroupContent>
             {playlists.map((playlist, index) => (
-                <button className="w-full flex flex-row gap-2 px-2" onClick={(() => setCurrentPlaylist(index))}>
-                    {AppSidebarPlaylistCover(playlist, dataManager, localDataDir)}
+                <button className="w-full flex flex-row gap-2 items-center p-2" onClick={(() => setCurrentPlaylist(index))} key={index}>
+                    {AppSidebarPlaylistCover(playlist, dataManager, localDataDir, currentPlaylist, index)}
                     <div className="grow flex flex-col items-start">
                         <p>{playlist.name}</p>
                         <p className="text-muted-foreground">Playlist - {playlist.songs.length} track(s)</p>
@@ -50,8 +49,9 @@ function AppSidebarPlaylists(playlists: Playlists, dataManager: DataManager | un
     </SidebarGroup>;
 }
 
-function AppSidebarPlaylistCover(playlist: Playlist, dataManager: DataManager | undefined, localDataDir: string | null) {
-    return <div className="grow max-w-15 aspect-square border rounded-md bg-muted flex items-center justify-center">
+function AppSidebarPlaylistCover(playlist: Playlist, dataManager: DataManager | undefined, localDataDir: string | null, currentPlaylist: number | null | undefined, index: number) {
+
+    return <div className={`grow max-w-15 aspect-square border rounded-md bg-muted flex items-center justify-center ${currentPlaylist === index && `border-primary`}`}>
         {playlist.cover ? <img
             className={`rounded-md grow max-w-15 aspect-square border`}
             src={convertFileSrc(

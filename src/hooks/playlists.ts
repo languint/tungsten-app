@@ -56,9 +56,9 @@ export function useCurrentPlaylist() {
         };
     }, []);
 
-    const updateCurrentPlaylist = async (playlists: number | null) => {
-        setCurrentPlaylist(playlists);
-        await invoke("set_current_playlist", { volume: playlists });
+    const updateCurrentPlaylist = async (playlist: number | null) => {
+        setCurrentPlaylist(playlist);
+        await invoke("set_current_playlist", { playlist });
     };
 
     return { currentPlaylist, setCurrentPlaylist: updateCurrentPlaylist };
