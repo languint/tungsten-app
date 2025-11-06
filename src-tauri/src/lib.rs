@@ -1,13 +1,18 @@
-use std::{path::PathBuf, sync::Mutex};
+use std::sync::Mutex;
 
 use tauri::Manager;
 
-use crate::{data::DataManager, song::Song, state::{AppState, volume::{get_volume, set_volume}}};
+use crate::{
+    data::DataManager,
+    state::{
+        AppState, playlists::{get_playlists, set_playlists}, volume::{get_volume, set_volume}
+    },
+};
 
 mod album;
+mod data;
 mod song;
 mod state;
-mod data;
 
 use state::song::get_current_song;
 
@@ -15,25 +20,30 @@ use state::song::get_current_song;
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-
             let data_manager = DataManager::new().expect("Expected construction to succeed!");
 
-            println!("music_dir = {:#?}", &data_manager.music_dir);
-            println!("data_dir = {:#?}", &data_manager.data_dir);
-
-            let playlists = data_manager.read_playlists().expect("Expected read to succeed!");
-
-            dbg!(playlists);
+            let playlists = data_manager
+                .read_playlists()
+                .expect("Expected read to succeed!");
 
             app.manage(Mutex::new(AppState {
                 current_song: None,
                 volume_percent: 50,
+                playlists: Box::new(playlists),
+                data_manager,
             }));
+
             Ok(())
         })
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_current_song, get_volume, set_volume])
+        .invoke_handler(tauri::generate_handler![
+            get_current_song,
+            get_volume,
+            set_volume,
+            get_playlists,
+            set_playlists,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
