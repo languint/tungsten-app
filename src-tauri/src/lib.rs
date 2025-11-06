@@ -2,11 +2,12 @@ use std::{path::PathBuf, sync::Mutex};
 
 use tauri::Manager;
 
-use crate::{song::Song, state::{AppState, volume::{get_volume, set_volume}}};
+use crate::{data::DataManager, song::Song, state::{AppState, volume::{get_volume, set_volume}}};
 
 mod album;
 mod song;
 mod state;
+mod data;
 
 use state::song::get_current_song;
 
@@ -14,14 +15,18 @@ use state::song::get_current_song;
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
+
+            let data_manager = DataManager::new().expect("Expected construction to succeed!");
+
+            println!("music_dir = {:#?}", &data_manager.music_dir);
+            println!("data_dir = {:#?}", &data_manager.data_dir);
+
+            let playlists = data_manager.read_playlists().expect("Expected read to succeed!");
+
+            dbg!(playlists);
+
             app.manage(Mutex::new(AppState {
-                current_song: Some(Box::new(Song {
-                    title: String::from("Test song name"),
-                    album: None,
-                    artists: vec![String::from("The Test Band"), String::from("Some Other Artist")],
-                    audio_path: PathBuf::from("/"),
-                    cover_path: None,
-                })),
+                current_song: None,
                 volume_percent: 50,
             }));
             Ok(())
