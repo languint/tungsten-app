@@ -48,10 +48,14 @@ impl DataManager {
 pub struct FileSong {
     /// The display name of the song
     pub name: String,
+    /// The artists of the song
+    pub artists: Vec<String>,
     /// How long the song is, in seconds
     pub duration: u32,
     /// The file location of the song, relative to the `music_dir`
     pub track: PathBuf,
+    /// The file location of the cover, relative to the `data_dir`
+    pub cover: PathBuf,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
