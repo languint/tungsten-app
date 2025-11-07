@@ -1,7 +1,4 @@
-use crate::{
-    data::{DataManager, FilePlaylists},
-    song::Song,
-};
+use crate::data::{DataManager, FilePlaylists, FileSong};
 
 pub mod data_manager;
 pub mod playlists;
@@ -11,7 +8,7 @@ pub mod playing;
 
 #[derive(Default)]
 pub struct AppState {
-    pub current_song: Option<Box<Song>>,
+    pub current_song: Option<FileSong>,
     pub volume_percent: u8,
     pub playlists: Box<FilePlaylists>,
     pub current_playlist: Option<u8>,
