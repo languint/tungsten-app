@@ -1,22 +1,24 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Playlist, useCurrentPlaylist, usePlaylists } from "@/hooks/playlists"
-import { useEffect, useState } from "react";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCurrentPlaylist, usePlaylists } from "@/hooks/playlists"
 
 export function PlaylistView() {
     const { playlists } = usePlaylists();
     const { currentPlaylist } = useCurrentPlaylist();
 
-    const [currentPlaylistData, setCurrentPlaylistData] = useState<Playlist>();
+    const currentPlaylistData =
+        currentPlaylist == null ? undefined : playlists[currentPlaylist];
 
-    useEffect(() => {
-        if (currentPlaylist && playlists[currentPlaylist]) {
-            setCurrentPlaylistData(playlists[currentPlaylist]);
-        }
-    }, [currentPlaylist, playlists])
-
-    return <Card >
-        <CardHeader>
-            <CardTitle>{currentPlaylistData?.name ?? "Playlist"}</CardTitle>
-        </CardHeader>
-    </Card>
+    const durationSeconds = currentPlaylistData?.songs.reduce((acc, current) => acc + current.duration, 0) ?? 0;
+    const durationString = (durationSeconds >= 3600 ? `${durationSeconds % 3600} h` : ``) + `${durationSeconds % 60} m`;
+    return (
+        <Card className="flex grow max-h-[calc(100%-6rem)] m-4">
+            <CardHeader>
+                <CardTitle>
+                    {currentPlaylistData?.name ?? "unknown playlist"}
+                </CardTitle>
+                <CardDescription>Playlist - {durationString}</CardDescription>
+            </CardHeader>
+        </Card>
+    );
 }
+

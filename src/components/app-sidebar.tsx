@@ -5,6 +5,9 @@ import { Playlist, Playlists, useCurrentPlaylist, usePlaylists } from "@/hooks/p
 import * as path from '@tauri-apps/api/path';
 import { useEffect, useState } from "react";
 import { ListMusicIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { ScrollArea } from "./ui/scroll-area";
+import Marquee from "react-fast-marquee";
 
 export function AppSidebar() {
     const { playlists } = usePlaylists();
@@ -25,7 +28,7 @@ export function AppSidebar() {
     return (
         <Sidebar className="h-[calc(100%-4rem)]">
             <SidebarHeader></SidebarHeader>
-            <SidebarContent >
+            <SidebarContent className="p-0 m-0">
                 {AppSidebarPlaylists(playlists, dataManager, localDataDir)}
             </SidebarContent>
         </Sidebar>
@@ -33,31 +36,58 @@ export function AppSidebar() {
 }
 
 function AppSidebarPlaylists(playlists: Playlists, dataManager: DataManager | undefined, localDataDir: string | null) {
-    const { currentPlaylist, setCurrentPlaylist } = useCurrentPlaylist();
+    const { setCurrentPlaylist } = useCurrentPlaylist();
+
+    const playlistArtists = (playlist: Playlist) => {
+        let artists: Set<string> = new Set();
+        playlist.songs.forEach((s) => {
+            s.artists.forEach((a) => {
+                if (!(a in artists)) {
+                    artists.add(a);
+                }
+            })
+        })
+
+        return [...artists]
+    }
+
     return <SidebarGroup>
         <SidebarGroupContent>
-            {playlists.map((playlist, index) => (
-                <button className="w-full flex flex-row gap-2 items-center p-2" onClick={(() => setCurrentPlaylist(index))} key={index}>
-                    {AppSidebarPlaylistCover(playlist, dataManager, localDataDir, currentPlaylist, index)}
-                    <div className="grow flex flex-col items-start">
-                        <p>{playlist.name}</p>
-                        <p className="text-muted-foreground">Playlist - {playlist.songs.length} track(s)</p>
-                    </div>
-                </button>
-            ))}
+            <TooltipProvider>
+                <ScrollArea>
+                    {playlists.map((playlist, index) => (
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <button className="w-full flex p-2 flex-row gap-2" onClick={(() => setCurrentPlaylist(index))} key={index}>
+                                    {AppSidebarPlaylistCover(playlist, dataManager, localDataDir)}
+                                    <div className="flex flex-col items-start">
+                                        <p>{playlist.name}</p>
+                                        <Marquee speed={8} delay={1}>
+                                            {playlistArtists(playlist).map((a) => (
+                                                <p className="text-muted-foreground pr-2">{a}</p>))}
+                                        </Marquee>
+                                    </div>
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>{playlist.name}</TooltipContent>
+                        </Tooltip>
+                    ))}
+
+                </ScrollArea>
+            </TooltipProvider>
         </SidebarGroupContent>
     </SidebarGroup>;
 }
 
-function AppSidebarPlaylistCover(playlist: Playlist, dataManager: DataManager | undefined, localDataDir: string | null, currentPlaylist: number | null | undefined, index: number) {
+function AppSidebarPlaylistCover(playlist: Playlist, dataManager: DataManager | undefined, localDataDir: string | null) {
 
-    return <div className={`grow max-w-15 aspect-square border rounded-md bg-muted flex items-center justify-center ${currentPlaylist === index && `border-primary`}`}>
+    return <div className={`grow aspect-square border rounded-md bg-muted flex items-center justify-center`}>
         {playlist.cover ? <img
-            className={`rounded-md grow max-w-15 aspect-square border`}
+            className={`rounded-md grow max-w-12 aspect-square border`}
             src={convertFileSrc(
                 `${dataManager?.dataDir ?? `${localDataDir}/tungsten_data`}/covers/${playlist.cover}`
             )} />
-            : <ListMusicIcon className="stroke-muted-foreground w-15" />}
+            : <ListMusicIcon className="stroke-muted-foreground w-12" />}
     </div>;
 }
 
