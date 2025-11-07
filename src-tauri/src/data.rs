@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf};
+use std::{fs, io::Write, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -72,13 +72,14 @@ impl DataManager {
     pub fn read_playlists(&self) -> Result<FilePlaylists, String> {
         let file_path = &self.data_dir.join(PLAYLISTS_FILE_NAME);
 
-        if let Ok(exists) = fs::exists(&self.data_dir)
+        if let Ok(exists) = fs::exists(file_path)
             && !exists
         {
-            if let Err(e) = fs::File::create(&file_path)
-                .map_err(|e| format!("Failed to create playlists file: {e}"))
-            {
-                return Err(e);
+            match fs::File::create(&file_path) {
+                Ok(mut f) => if let Err(e) = f.write_all("[]".as_bytes()) {
+                    return Err(format!("Failed to write to playlists file: {e}"))
+                },
+                Err(e) =>  return Err(format!("Failed to create playlists file: {e}")),
             }
         }
 
